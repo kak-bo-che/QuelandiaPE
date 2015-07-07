@@ -1,6 +1,6 @@
 <?php
 
-namespace ExamplePlugin;
+namespace QuelandiaPE;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -28,27 +28,42 @@ class MainClass extends PluginBase implements Listener{
 		$this->getLogger()->info(TextFormat::DARK_RED . "I've been disabled!");
 	}
 
+	function stealItem($thief_name, $victim_name){
+		$item_name = function($item){
+			return $item->getName();
+		};
+
+		$thief = Server::getInstance()->getPlayer($thief_name);
+		$victim = Server::getInstance()->getPlayer($victim_name);
+		if ($thief and $victim){
+			$items = $victim->getInventory()->getContents();
+			$item_keys = array_keys($items);
+			if (!empty($items)){
+				$item_index = $item_keys[rand(0, count($items) - 1)];
+				$stolen_item = $victim->getInventory()->getItem($item_index);
+				$item_name = $stolen_item->getName();
+				$thief->getInventory()->addItem($stolen_item);
+				$victim->getInventory()->removeItem($stolen_item);
+				$thief->sendMessage("You have stolen {$item_name} from {$victim_name}");
+				$victim->sendMessage("{$thief_name} just stole your {$item_name}");
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
 		switch($command->getName()){
-			case "example":
-				$sender->sendMessage("Hello ".$sender->getName()."!");
+			case "steal_item":
+			 	$thief_name = array_shift($args);
+			 	$victim_name = array_shift($args);
+			 	$this->stealItem($thief_name, $victim_name);
+				return true;
+			case "create_base":
 				return true;
 			default:
 				return false;
 		}
-	}
-
-	/**
-	 * @param BlockBreakEvent $event
-	 *
-	 * @priority        NORMAL
-	 * @ignoreCancelled false
-	 */
-	public function onBreak(BlockBreakEvent $event){
-		$blockName = $event->getBlock()->getName();
-		Server::getInstance()->broadcastMessage($blockName . " is broken!");
-		$scheduler = $this->getServer()->getScheduler();
-		$scheduler->scheduleAsyncTask(new MatrixDisplayTask('http://localhost:8080/block', $blockName));
 	}
 
 	/**

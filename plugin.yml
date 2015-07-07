@@ -1,19 +1,19 @@
 #name, main, version and api are required
-name: ExamplePlugin
-main: ExamplePlugin\MainClass
+name: QuelandiaPE
+main: QuelandiaPE\MainClass
 version: 1.0.0
 api: [1.0.0]
 
 load: POSTWORLD
-author: PocketMine Team
-description: Example plugin showing the new API
-website: https://github.com/PocketMine/ExamplePlugin
+author: Troy Ross
+description: Quelandia Game Plugin
+website: https://github.com/Quelab/QuelandiaPE
 commands:
- example:
-  description: Example command
-  usage: "Usage: /example"
-  permission: exampleplugin.command.example
+ steal_item:
+  description: Give item to theif from victim
+  usage: "Usage: /steal_item <thief> <victim>"
+  permission: exampleplugin.command.steal_item
 permissions:
- exampleplugin.command.example:
+ exampleplugin.command.steal_item:
   description: "Allows the user to run the example command"
   default: true
